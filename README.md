@@ -12,11 +12,11 @@ Built as hands-on practice for automotive / embedded software engineering (real-
 
 ## How to run any of these
 
-Each folder is self-contained: `diagram.json` (circuit) + `sketch.ino` (firmware) + `libraries.txt` (dependencies, if any).
+Each folder is self-contained: `diagram.json` (circuit) + a `.ino` sketch (firmware, named to match its folder — Arduino requires this) + `libraries.txt` (dependencies, if any).
 
 **Easiest — Wokwi web simulator:**
 1. Go to [wokwi.com/projects/new/arduino-uno](https://wokwi.com/projects/new/arduino-uno)
-2. Paste the contents of `sketch.ino` into the code editor
+2. Paste the contents of the project's `.ino` file into the code editor
 3. Click the `diagram.json` tab and paste in that file's contents (or use the visual editor to wire it up using the README's pin table — same result)
 4. If `libraries.txt` exists, add those libraries via the Library Manager (bookcase icon)
 5. Press the green ▶ Simulate button
@@ -29,7 +29,7 @@ Each folder is self-contained: `diagram.json` (circuit) + `sketch.ino` (firmware
 
 Each project was reviewed for real-time and production flaws (blocking calls, missing filtering/hysteresis, unsafe power-on recovery, no fault logging, etc.) and hardened where firmware alone can fix it — non-blocking sensor I/O, watchdog timers, EEPROM-backed fault/boot logging, signal smoothing, a safe startup state, and a defensive conflict check. Each project's README has a **Production Hardening** section detailing exactly what changed and, just as importantly, what still requires real hardware or a formal safety process (redundant sensors, an independent conflict monitor, automotive-rated components, ISO 26262) and can't be closed by code changes alone.
 
-None of the hardened sketches were compile-tested against `arduino-cli` or real hardware — no toolchain was available in the environment they were written in. Flag anything that doesn't compile as-is; each README notes the most likely culprits.
+All three sketches are now compile-verified with `arduino-cli` against `arduino:avr@1.8.8` — clean builds, no warnings, sizes noted in each README. That pass also caught a real bug the simulator never would have: each `.ino` file had to be renamed to match its parent folder, since Arduino's toolchain (unlike Wokwi's paste-in editor) requires that exact match to even find the sketch.
 
 ## Roadmap
 

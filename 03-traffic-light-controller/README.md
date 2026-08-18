@@ -54,4 +54,4 @@ The most serious gap in the first version: it always booted straight into `NS_GR
 - **Fixed timing, no field configuration.** Real deployments need per-intersection timing studies and a way to adjust timing without reflashing firmware.
 - **GPIO can't drive real signal loads.** This drives a few mA into LEDs; real signal heads need high-current drivers with flyback protection and galvanic isolation from the logic board.
 - **No functional-safety process** — no ISO 26262/equivalent hazard analysis, mandatory before anything like this actually controls a real intersection.
-- Not compile-tested against real Arduino hardware or `arduino-cli` — no toolchain was available in this environment.
+**Compile-verified:** `arduino-cli compile --fqbn arduino:avr:uno` against `arduino:avr@1.8.8` — 4826 bytes flash (14%), 500 bytes RAM (24%). Clean build, no warnings.

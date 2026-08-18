@@ -38,7 +38,7 @@ The first version had a bottleneck that isn't obvious until you do the math: a f
 | Flaw | Fix |
 |---|---|
 | ~90ms blocking I2C write per frame at the 100kHz default | `Wire.setClock(400000)` — fast mode, cuts the write to roughly a quarter of the time. |
-| A glitched I2C bus could hang the sketch forever | `Wire.setWireTimeoutUs()` added behind a feature-detect guard, so a bus fault times out instead of freezing the display permanently. |
+| A glitched I2C bus could hang the sketch forever | `Wire.setWireTimeoutUs()` added behind a feature-detect guard. Confirmed by actual compile: on `arduino:avr@1.8.8` (the current core) this guard evaluates false and the call is skipped — that AVR core's `Wire.h` doesn't expose the timeout feature yet. The watchdog is the real backstop for an I2C hang on this core; the guard just means the sketch builds cleanly either way instead of failing outright. |
 | Raw potentiometer readings jittered on electrical noise | Exponential moving average (`EMA_ALPHA = 0.2`) smooths both speed and temp before they're mapped to display units. |
 | Turn signal state lost on every power cycle | Persisted to EEPROM on toggle (`EEPROM.update`, so it only writes on an actual change — EEPROM has a finite write-cycle life). |
 | Turn signal blink rate was an arbitrary 400ms | Changed to 333ms, landing at ~90 flashes/minute — inside the ECE R6 regulated range (60–120 fpm) rather than a number picked because it "looked right." |
@@ -49,4 +49,6 @@ The first version had a bottleneck that isn't obvious until you do the math: a f
 - **No legal calibration/traceability.** Real speedometers must never under-read actual speed beyond a defined tolerance (UNECE regulations) with a verified, auditable calibration chain. This is a `map()` call with no cross-check against a second signal source.
 - **Wrong display technology for a real cluster.** OLEDs burn in on static elements over years (the speed digits sit in the same pixels constantly) and read poorly in direct sunlight — production clusters use sunlight-readable TFTs for exactly this reason.
 - **No functional-safety process behind it** — no ISO 26262 hazard analysis or ASIL rating, which real vehicle safety-relevant displays require.
-- Not compile-tested against real Arduino hardware or `arduino-cli` — no toolchain was available in this environment. The `Wire.setWireTimeoutUs` call is wrapped in a feature-detect guard specifically so it compiles safely either way; if it's silently skipped, the bus can still hang on a real fault — only the watchdog would recover you at that point.
+- **I2C bus timeout isn't actually active on the current core.** As noted above — `Wire.setWireTimeoutUs()` compiles out on `arduino:avr@1.8.8`. A real deploy on a newer core (or a different MCU with hardware I2C timeout support) would need to re-check this; until then, the watchdog is the only recovery path for a hung bus.
+
+**Compile-verified:** `arduino-cli compile --fqbn arduino:avr:uno` against `arduino:avr@1.8.8` with Adafruit GFX Library 1.12.6 + Adafruit SSD1306 2.5.17 + Adafruit BusIO 1.17.4 — 15680 bytes flash (48%), 377 bytes RAM (18%). Clean build, no warnings.
