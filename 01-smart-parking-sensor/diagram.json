@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "author": "Njooh Jim-Carey Toh",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-hc-sr04", "id": "sensor", "top": -80, "left": 220, "attrs": {} },
+    { "type": "wokwi-led", "id": "led_green", "top": -20, "left": 320, "attrs": { "color": "green" } },
+    { "type": "wokwi-led", "id": "led_yellow", "top": -20, "left": 360, "attrs": { "color": "yellow" } },
+    { "type": "wokwi-led", "id": "led_red", "top": -20, "left": 400, "attrs": { "color": "red" } },
+    { "type": "wokwi-resistor", "id": "r_green", "top": 20, "left": 320, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r_yellow", "top": 20, "left": 360, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r_red", "top": 20, "left": 400, "attrs": { "value": "220" } },
+    { "type": "wokwi-buzzer", "id": "buzzer", "top": 60, "left": 440, "attrs": { "volume": "0.1" } }
+  ],
+  "connections": [
+    [ "sensor:VCC", "uno:5V", "red", [ "v0" ] ],
+    [ "sensor:GND", "uno:GND.1", "black", [ "v0" ] ],
+    [ "sensor:TRIG", "uno:9", "green", [ "v0" ] ],
+    [ "sensor:ECHO", "uno:10", "blue", [ "v0" ] ],
+
+    [ "uno:5", "led_green:A", "green", [ "v0" ] ],
+    [ "led_green:C", "r_green:1", "black", [ "v0" ] ],
+    [ "r_green:2", "uno:GND.2", "black", [ "v0" ] ],
+
+    [ "uno:6", "led_yellow:A", "yellow", [ "v0" ] ],
+    [ "led_yellow:C", "r_yellow:1", "black", [ "v0" ] ],
+    [ "r_yellow:2", "uno:GND.2", "black", [ "v0" ] ],
+
+    [ "uno:7", "led_red:A", "red", [ "v0" ] ],
+    [ "led_red:C", "r_red:1", "black", [ "v0" ] ],
+    [ "r_red:2", "uno:GND.2", "black", [ "v0" ] ],
+
+    [ "uno:8", "buzzer:1", "orange", [ "v0" ] ],
+    [ "buzzer:2", "uno:GND.2", "black", [ "v0" ] ]
+  ]
+}

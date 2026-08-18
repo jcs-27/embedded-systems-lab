@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "author": "Njooh Jim-Carey Toh",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-ssd1306", "id": "oled", "top": -100, "left": 200, "attrs": { "i2cAddress": "0x3c" } },
+    { "type": "wokwi-potentiometer", "id": "pot_speed", "top": 40, "left": 260, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot_temp", "top": 40, "left": 340, "attrs": {} },
+    { "type": "wokwi-pushbutton", "id": "btn_signal", "top": 40, "left": 420, "attrs": { "color": "blue" } },
+    { "type": "wokwi-led", "id": "led_signal", "top": 0, "left": 420, "attrs": { "color": "amber" } },
+    { "type": "wokwi-resistor", "id": "r_signal", "top": -20, "left": 420, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "oled:VCC", "uno:5V", "red", [ "v0" ] ],
+    [ "oled:GND", "uno:GND.1", "black", [ "v0" ] ],
+    [ "oled:SDA", "uno:A4", "green", [ "v0" ] ],
+    [ "oled:SCL", "uno:A5", "yellow", [ "v0" ] ],
+
+    [ "pot_speed:VCC", "uno:5V", "red", [ "v0" ] ],
+    [ "pot_speed:GND", "uno:GND.2", "black", [ "v0" ] ],
+    [ "pot_speed:SIG", "uno:A0", "blue", [ "v0" ] ],
+
+    [ "pot_temp:VCC", "uno:5V", "red", [ "v0" ] ],
+    [ "pot_temp:GND", "uno:GND.2", "black", [ "v0" ] ],
+    [ "pot_temp:SIG", "uno:A1", "orange", [ "v0" ] ],
+
+    [ "btn_signal:1.l", "uno:2", "green", [ "v0" ] ],
+    [ "btn_signal:2.r", "uno:GND.2", "black", [ "v0" ] ],
+
+    [ "uno:3", "led_signal:A", "yellow", [ "v0" ] ],
+    [ "led_signal:C", "r_signal:1", "black", [ "v0" ] ],
+    [ "r_signal:2", "uno:GND.2", "black", [ "v0" ] ]
+  ]
+}
