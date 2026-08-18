@@ -17,7 +17,7 @@
     [ "sensor:VCC", "uno:5V", "red", [ "v0" ] ],
     [ "sensor:GND", "uno:GND.1", "black", [ "v0" ] ],
     [ "sensor:TRIG", "uno:9", "green", [ "v0" ] ],
-    [ "sensor:ECHO", "uno:10", "blue", [ "v0" ] ],
+    [ "sensor:ECHO", "uno:3", "blue", [ "v0" ] ],
 
     [ "uno:5", "led_green:A", "green", [ "v0" ] ],
     [ "led_green:C", "r_green:1", "black", [ "v0" ] ],

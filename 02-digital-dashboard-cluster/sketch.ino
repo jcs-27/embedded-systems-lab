@@ -1,5 +1,5 @@
 /*
- * Digital Dashboard Cluster
+ * Digital Dashboard Cluster — hardened revision
  *
  * Simulated instrument cluster on a 128x64 SSD1306 OLED:
  *   - Speed (from potentiometer on A0), large digital readout
@@ -10,11 +10,29 @@
  *
  * Turn the two potentiometer knobs in the Wokwi simulator to drive speed
  * and temperature; click the pushbutton to toggle the turn signal.
+ *
+ * Hardening changes vs. the first version (see README "Production
+ * Hardening" section for full rationale):
+ *   - Wire runs at 400kHz instead of the 100kHz default, cutting the
+ *     full-frame OLED write from ~90ms down to ~25ms — that transfer
+ *     blocks the whole MCU on AVR, so this directly buys back
+ *     responsiveness on every single frame.
+ *   - A Wire bus timeout stops a glitched I2C line from hanging the
+ *     sketch forever.
+ *   - Exponential moving average smooths both potentiometer readings so
+ *     displayed values don't jitter on electrical noise.
+ *   - Turn signal state persists across power loss (EEPROM), and its
+ *     blink rate is aligned to the ECE R6 standard (~90 flashes/min)
+ *     instead of an arbitrary period.
+ *   - A watchdog resets the MCU if the main loop ever hangs (e.g. an
+ *     I2C fault the bus timeout doesn't catch).
  */
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <avr/wdt.h>
+#include <EEPROM.h>
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -31,6 +49,8 @@ const int SPEED_MIN = 0, SPEED_MAX = 220;      // km/h
 const int TEMP_MIN = 40, TEMP_MAX = 120;        // degrees C
 const int TEMP_HOT_THRESHOLD = 100;
 
+const int EEPROM_ADDR_SIGNAL_STATE = 0; // 1 byte
+
 bool turnSignalOn = false;
 bool lastButtonReading = HIGH;
 unsigned long lastDebounceTime = 0;
@@ -38,15 +58,31 @@ const unsigned long DEBOUNCE_MS = 40;
 
 unsigned long lastBlinkToggle = 0;
 bool blinkPhase = false;
-const unsigned long BLINK_MS = 400;
+// ~90 flashes/min, inside the ECE R6 regulated range of 60-120 fpm
+const unsigned long BLINK_MS = 333;
+
+// exponential moving average: smoothed = smoothed*(1-a) + raw*a
+const float EMA_ALPHA = 0.2;
+float smoothedSpeedRaw = 0;
+float smoothedTempRaw = 0;
+bool emaInitialized = false;
 
 void setup() {
   pinMode(PIN_BUTTON, INPUT_PULLUP);
   pinMode(PIN_SIGNAL_LED, OUTPUT);
 
   display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
+  Wire.setClock(400000); // fast mode: cuts full-frame OLED write time ~4x
+#if defined(TWI_HAS_TIMEOUT) || defined(WIRE_HAS_TIMEOUT)
+  Wire.setWireTimeoutUs(25000, true); // don't let a glitched I2C bus hang forever
+#endif
   display.clearDisplay();
   display.display();
+
+  uint8_t stored = EEPROM.read(EEPROM_ADDR_SIGNAL_STATE);
+  turnSignalOn = (stored == 1);
+
+  wdt_enable(WDTO_2S);
 }
 
 void handleButton() {
@@ -60,6 +96,7 @@ void handleButton() {
       stableState = reading;
       if (stableState == LOW) { // pressed (active low)
         turnSignalOn = !turnSignalOn;
+        EEPROM.update(EEPROM_ADDR_SIGNAL_STATE, turnSignalOn ? 1 : 0); // survives power loss
       }
     }
   }
@@ -72,6 +109,16 @@ void updateBlink() {
     blinkPhase = !blinkPhase;
   }
   digitalWrite(PIN_SIGNAL_LED, (turnSignalOn && blinkPhase) ? HIGH : LOW);
+}
+
+int readSmoothed(uint8_t pin, float &smoothedRaw) {
+  int raw = analogRead(pin);
+  if (!emaInitialized) {
+    smoothedRaw = raw;
+  } else {
+    smoothedRaw = smoothedRaw * (1.0 - EMA_ALPHA) + raw * EMA_ALPHA;
+  }
+  return (int)(smoothedRaw + 0.5);
 }
 
 void drawSpeed(int speedKmh) {
@@ -115,19 +162,21 @@ void drawTurnSignal() {
 }
 
 void loop() {
+  wdt_reset();
+
   handleButton();
   updateBlink();
 
-  int rawSpeed = analogRead(PIN_POT_SPEED);
-  int rawTemp = analogRead(PIN_POT_TEMP);
-  int speedKmh = map(rawSpeed, 0, 1023, SPEED_MIN, SPEED_MAX);
-  int tempC = map(rawTemp, 0, 1023, TEMP_MIN, TEMP_MAX);
+  int rawSpeedSmoothed = readSmoothed(PIN_POT_SPEED, smoothedSpeedRaw);
+  int rawTempSmoothed = readSmoothed(PIN_POT_TEMP, smoothedTempRaw);
+  emaInitialized = true;
+
+  int speedKmh = map(rawSpeedSmoothed, 0, 1023, SPEED_MIN, SPEED_MAX);
+  int tempC = map(rawTempSmoothed, 0, 1023, TEMP_MIN, TEMP_MAX);
 
   display.clearDisplay();
   drawSpeed(speedKmh);
   drawTempGauge(tempC);
   drawTurnSignal();
   display.display();
-
-  delay(20);
 }

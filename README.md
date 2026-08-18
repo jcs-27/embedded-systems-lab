@@ -25,6 +25,12 @@ Each folder is self-contained: `diagram.json` (circuit) + `sketch.ino` (firmware
 
 > Wiring was authored by hand against Wokwi's part library from memory of its schema — if a wire doesn't auto-connect when you open a project, the visual editor will highlight the mismatched pin; just redraw that one connection. Everything else (the firmware logic, state machines, sensor math) is untouched by that and works as written.
 
+## Production Hardening Pass
+
+Each project was reviewed for real-time and production flaws (blocking calls, missing filtering/hysteresis, unsafe power-on recovery, no fault logging, etc.) and hardened where firmware alone can fix it — non-blocking sensor I/O, watchdog timers, EEPROM-backed fault/boot logging, signal smoothing, a safe startup state, and a defensive conflict check. Each project's README has a **Production Hardening** section detailing exactly what changed and, just as importantly, what still requires real hardware or a formal safety process (redundant sensors, an independent conflict monitor, automotive-rated components, ISO 26262) and can't be closed by code changes alone.
+
+None of the hardened sketches were compile-tested against `arduino-cli` or real hardware — no toolchain was available in the environment they were written in. Flag anything that doesn't compile as-is; each README notes the most likely culprits.
+
 ## Roadmap
 
 - [ ] Add a 4th project: lane detection with OpenCV (separate repo, not Wokwi)
