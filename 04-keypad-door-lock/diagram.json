@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "author": "Njooh Jim-Carey Toh",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-membrane-keypad", "id": "keypad", "top": -60, "left": 220, "attrs": {} },
+    { "type": "wokwi-servo", "id": "latch", "top": 40, "left": 420, "attrs": { "horn": "double" } },
+    { "type": "wokwi-led", "id": "led_green", "top": -20, "left": 400, "attrs": { "color": "green" } },
+    { "type": "wokwi-led", "id": "led_red", "top": -20, "left": 440, "attrs": { "color": "red" } },
+    { "type": "wokwi-resistor", "id": "r_green", "top": -20, "left": 470, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r_red", "top": 0, "left": 470, "attrs": { "value": "220" } },
+    { "type": "wokwi-buzzer", "id": "buzzer", "top": 80, "left": 220, "attrs": { "volume": "0.1" } }
+  ],
+  "connections": [
+    [ "keypad:R1", "uno:2", "green", [ "v0" ] ],
+    [ "keypad:R2", "uno:3", "green", [ "v0" ] ],
+    [ "keypad:R3", "uno:4", "green", [ "v0" ] ],
+    [ "keypad:R4", "uno:5", "green", [ "v0" ] ],
+    [ "keypad:C1", "uno:6", "blue", [ "v0" ] ],
+    [ "keypad:C2", "uno:7", "blue", [ "v0" ] ],
+    [ "keypad:C3", "uno:8", "blue", [ "v0" ] ],
+    [ "keypad:C4", "uno:9", "blue", [ "v0" ] ],
+
+    [ "latch:PWM", "uno:10", "orange", [ "v0" ] ],
+    [ "latch:V+", "uno:5V", "red", [ "v0" ] ],
+    [ "latch:GND", "uno:GND.1", "black", [ "v0" ] ],
+
+    [ "uno:11", "led_green:A", "green", [ "v0" ] ],
+    [ "led_green:C", "r_green:1", "black", [ "v0" ] ],
+    [ "r_green:2", "uno:GND.2", "black", [ "v0" ] ],
+
+    [ "uno:12", "led_red:A", "red", [ "v0" ] ],
+    [ "led_red:C", "r_red:1", "black", [ "v0" ] ],
+    [ "r_red:2", "uno:GND.2", "black", [ "v0" ] ],
+
+    [ "uno:A0", "buzzer:1", "orange", [ "v0" ] ],
+    [ "buzzer:2", "uno:GND.2", "black", [ "v0" ] ]
+  ]
+}

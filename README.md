@@ -9,6 +9,7 @@ Built as hands-on practice for automotive / embedded software engineering (real-
 | 1 | [Smart Parking Sensor](./01-smart-parking-sensor) | Ultrasonic distance sensing, threshold-based zone logic, LED/buzzer feedback |
 | 2 | [Digital Dashboard Cluster](./02-digital-dashboard-cluster) | OLED graphics, analog sensor input, real-time gauge rendering |
 | 3 | [Traffic Light + Pedestrian Crossing](./03-traffic-light-controller) | Finite state machine, non-blocking timing (`millis()`, no `delay()`), interrupt-style button handling |
+| 4 | [Keypad Door Lock](./04-keypad-door-lock) | Matrix keypad scanning, servo actuation, timed lockout state, EEPROM event logging |
 
 ## How to run any of these
 
