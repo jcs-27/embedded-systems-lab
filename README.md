@@ -10,6 +10,7 @@ Built as hands-on practice for automotive / embedded software engineering (real-
 | 2 | [Digital Dashboard Cluster](./02-digital-dashboard-cluster) | OLED graphics, analog sensor input, real-time gauge rendering |
 | 3 | [Traffic Light + Pedestrian Crossing](./03-traffic-light-controller) | Finite state machine, non-blocking timing (`millis()`, no `delay()`), interrupt-style button handling |
 | 4 | [Keypad Door Lock](./04-keypad-door-lock) | Matrix keypad scanning, servo actuation, timed lockout state, EEPROM event logging |
+| 5 | [Mini Weather Station](./05-mini-weather-station) | DHT22 sensor timing constraints, EEPROM min/max persistence, comfort classification |
 
 ## How to run any of these
 

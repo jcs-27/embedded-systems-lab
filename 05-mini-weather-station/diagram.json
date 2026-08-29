@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "author": "Njooh Jim-Carey Toh",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht", "top": -100, "left": 220, "attrs": {} },
+    { "type": "wokwi-ssd1306", "id": "oled", "top": -100, "left": 340, "attrs": { "i2cAddress": "0x3c" } },
+    { "type": "wokwi-pushbutton", "id": "btn_reset", "top": 40, "left": 220, "attrs": { "color": "blue" } },
+    { "type": "wokwi-led", "id": "led_green", "top": 20, "left": 340, "attrs": { "color": "green" } },
+    { "type": "wokwi-led", "id": "led_yellow", "top": 20, "left": 370, "attrs": { "color": "yellow" } },
+    { "type": "wokwi-led", "id": "led_red", "top": 20, "left": 400, "attrs": { "color": "red" } },
+    { "type": "wokwi-resistor", "id": "r_green", "top": 50, "left": 340, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r_yellow", "top": 50, "left": 370, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r_red", "top": 50, "left": 400, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "dht:VCC", "uno:5V", "red", [ "v0" ] ],
+    [ "dht:GND", "uno:GND.1", "black", [ "v0" ] ],
+    [ "dht:SDA", "uno:7", "green", [ "v0" ] ],
+
+    [ "oled:VCC", "uno:5V", "red", [ "v0" ] ],
+    [ "oled:GND", "uno:GND.1", "black", [ "v0" ] ],
+    [ "oled:SDA", "uno:A4", "green", [ "v0" ] ],
+    [ "oled:SCL", "uno:A5", "yellow", [ "v0" ] ],
+
+    [ "btn_reset:1.l", "uno:8", "blue", [ "v0" ] ],
+    [ "btn_reset:2.r", "uno:GND.2", "black", [ "v0" ] ],
+
+    [ "uno:9", "led_green:A", "green", [ "v0" ] ],
+    [ "led_green:C", "r_green:1", "black", [ "v0" ] ],
+    [ "r_green:2", "uno:GND.2", "black", [ "v0" ] ],
+
+    [ "uno:10", "led_yellow:A", "yellow", [ "v0" ] ],
+    [ "led_yellow:C", "r_yellow:1", "black", [ "v0" ] ],
+    [ "r_yellow:2", "uno:GND.2", "black", [ "v0" ] ],
+
+    [ "uno:11", "led_red:A", "red", [ "v0" ] ],
+    [ "led_red:C", "r_red:1", "black", [ "v0" ] ],
+    [ "r_red:2", "uno:GND.2", "black", [ "v0" ] ]
+  ]
+}
